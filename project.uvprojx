@@ -325,7 +325,7 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>3</v6Lang>
@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32L151xB,USE_HAL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\component\drivers\include;.\component\FreeRTOS\Source\include;.\component\FreeRTOS\Source\portable\RVDS\ARM_CM3;.\include;.\board\bsp;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc;.\board\STM32L1xx_HAL\CMSIS\Include;.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Include</IncludePath>
+              <IncludePath>.\component\drivers\include;.\component\FreeRTOS\Source\include;.\component\FreeRTOS\Source\portable\RVDS\ARM_CM3;.\include;.\board\bsp;.\board\include;.\board\driver\inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc\Legacy;.\board\STM32L1xx_HAL\CMSIS\Include;.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Include</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -440,6 +440,13 @@
         </Group>
         <Group>
           <GroupName>board/driver</GroupName>
+          <Files>
+            <File>
+              <FileName>drv_uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board\driver\src\drv_uart.c</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>board/lib</GroupName>
@@ -538,6 +545,11 @@
               <FileName>startup_stm32l151xb.s</FileName>
               <FileType>2</FileType>
               <FilePath>.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Source\Templates\arm\startup_stm32l151xb.s</FilePath>
+            </File>
+            <File>
+              <FileName>stm32l1xx_hal_msp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\code\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Source\Templates\stm32l1xx_hal_msp.c</FilePath>
             </File>
           </Files>
         </Group>
