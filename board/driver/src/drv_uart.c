@@ -1390,16 +1390,6 @@ static uint32_t rt_serial_control(struct rt_device *dev,
 
     switch (cmd)
     {
-        case RT_DEVICE_CTRL_SUSPEND:
-            /* suspend device */
-            dev->flag |= RT_DEVICE_FLAG_SUSPENDED;
-            break;
-
-        case RT_DEVICE_CTRL_RESUME:
-            /* resume device */
-            dev->flag &= ~RT_DEVICE_FLAG_SUSPENDED;
-            break;
-
         case RT_DEVICE_CTRL_CONFIG:
             if (args)
             {
@@ -1407,7 +1397,7 @@ static uint32_t rt_serial_control(struct rt_device *dev,
                 if (pconfig->bufsz != serial->config.bufsz && serial->parent.ref_count)
                 {
                     /*can not change buffer size*/
-                    return RT_EBUSY;
+                    return DRV_ERROR_BUSY;
                 }
                 /* set serial configure */
                 serial->config = *pconfig;
@@ -1419,113 +1409,6 @@ static uint32_t rt_serial_control(struct rt_device *dev,
             }
 
             break;
-
-#ifdef RT_USING_POSIX_TERMIOS
-        case TCGETA:
-            {
-                struct termios *tio = (struct termios*)args;
-                if (tio == NULL) return -RT_EINVAL;
-
-                tio->c_iflag = 0;
-                tio->c_oflag = 0;
-                tio->c_lflag = 0;
-
-                /* update oflag for console device */
-                if (rt_console_get_device() == dev)
-                    tio->c_oflag = OPOST | ONLCR;
-
-                /* set cflag */
-                tio->c_cflag = 0;
-                if (serial->config.data_bits == DATA_BITS_5)
-                    tio->c_cflag = CS5;
-                else if (serial->config.data_bits == DATA_BITS_6)
-                    tio->c_cflag = CS6;
-                else if (serial->config.data_bits == DATA_BITS_7)
-                    tio->c_cflag = CS7;
-                else if (serial->config.data_bits == DATA_BITS_8)
-                    tio->c_cflag = CS8;
-
-                if (serial->config.stop_bits == STOP_BITS_2)
-                    tio->c_cflag |= CSTOPB;
-
-                if (serial->config.parity == PARITY_EVEN)
-                    tio->c_cflag |= PARENB;
-                else if (serial->config.parity == PARITY_ODD)
-                    tio->c_cflag |= (PARODD | PARENB);
-
-                cfsetospeed(tio, _get_speed(serial->config.baud_rate));
-            }
-            break;
-
-        case TCSETAW:
-        case TCSETAF:
-        case TCSETA:
-            {
-                int baudrate;
-                struct serial_configure config;
-
-                struct termios *tio = (struct termios*)args;
-                if (tio == NULL) return -RT_EINVAL;
-
-                config = serial->config;
-
-                baudrate = _get_baudrate(cfgetospeed(tio));
-                config.baud_rate = baudrate;
-
-                switch (tio->c_cflag & CSIZE)
-                {
-                case CS5:
-                    config.data_bits = DATA_BITS_5;
-                    break;
-                case CS6:
-                    config.data_bits = DATA_BITS_6;
-                    break;
-                case CS7:
-                    config.data_bits = DATA_BITS_7;
-                    break;
-                default:
-                    config.data_bits = DATA_BITS_8;
-                    break;
-                }
-
-                if (tio->c_cflag & CSTOPB) config.stop_bits = STOP_BITS_2;
-                else config.stop_bits = STOP_BITS_1;
-
-                if (tio->c_cflag & PARENB)
-                {
-                    if (tio->c_cflag & PARODD) config.parity = PARITY_ODD;
-                    else config.parity = PARITY_EVEN;
-                }
-                else config.parity = PARITY_NONE;
-
-                serial->ops->configure(serial, &config);
-            }
-            break;
-        case TCFLSH:
-            {
-                int queue = (int)args;
-
-                _tc_flush(serial, queue);
-            }
-
-            break;
-        case TCXONC:
-            break;
-#endif
-#ifdef RT_USING_POSIX
-        case FIONREAD:
-            {
-                rt_size_t recved = 0;
-                rt_base_t level;
-
-                level = rt_hw_interrupt_disable();
-                recved = _serial_fifo_calc_recved_len(serial);
-                rt_hw_interrupt_enable(level);
-
-                *(rt_size_t *)args = recved;
-            }
-            break;
-#endif
         default :
             /* control device */
             ret = serial->ops->control(serial, cmd, args);
@@ -1535,7 +1418,6 @@ static uint32_t rt_serial_control(struct rt_device *dev,
     return ret;
 }
 
-#ifdef RT_USING_DEVICE_OPS
 const static struct rt_device_ops serial_ops = 
 {
     rt_serial_init,
@@ -1545,7 +1427,7 @@ const static struct rt_device_ops serial_ops =
     rt_serial_write,
     rt_serial_control
 };
-#endif
+
 
 /*
  * serial register
@@ -1565,25 +1447,12 @@ uint32_t rt_hw_serial_register(struct rt_serial_device *serial,
     device->rx_indicate = NULL;
     device->tx_complete = NULL;
 
-#ifdef RT_USING_DEVICE_OPS
     device->ops         = &serial_ops;
-#else
-    device->init        = rt_serial_init;
-    device->open        = rt_serial_open;
-    device->close       = rt_serial_close;
-    device->read        = rt_serial_read;
-    device->write       = rt_serial_write;
-    device->control     = rt_serial_control;
-#endif
+
     device->user_data   = data;
 
     /* register a character device */
     ret = rt_device_register(device, name, flag);
-
-#if defined(RT_USING_POSIX)
-    /* set fops */
-    device->fops        = &_serial_fops;
-#endif
 
     return ret;
 }
@@ -1593,7 +1462,7 @@ void rt_hw_serial_isr(struct rt_serial_device *serial, int event)
 {
     switch (event & 0xff)
     {
-        case RT_SERIAL_EVENT_RX_IND:
+        case DRV_SERIAL_EVENT_RX_IND:
         {
             int ch = -1;
             struct rt_serial_rx_fifo* rx_fifo;
@@ -1647,12 +1516,12 @@ void rt_hw_serial_isr(struct rt_serial_device *serial, int event)
             }
             break;
         }
-        case RT_SERIAL_EVENT_TX_DONE:
+        case DRV_SERIAL_EVENT_TX_DONE:
         {
             struct rt_serial_tx_fifo* tx_fifo;
 
             tx_fifo = (struct rt_serial_tx_fifo*)serial->serial_tx;
-            rt_completion_done(&(tx_fifo->completion));
+            //rt_completion_done(&(tx_fifo->completion));
             break;
         }
 #ifdef RT_SERIAL_USING_DMA
@@ -1684,7 +1553,7 @@ void rt_hw_serial_isr(struct rt_serial_device *serial, int event)
             }
             break;
         }
-        case RT_SERIAL_EVENT_RX_DMADONE:
+        case DRV_SERIAL_EVENT_RX_DMADONE:
         {
             int length;
             rt_base_t level;

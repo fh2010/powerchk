@@ -5,9 +5,137 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
+
+
+#define rt_hw_interrupt_disable()  __set_PRIMASK(1)
+#define rt_hw_interrupt_enable()   __set_PRIMASK(0)
+
+
+#define rt_enter_critical()  __set_PRIMASK(1)
+#define rt_exit_critical()   __set_PRIMASK(0)
+
+#define rt_malloc  pvPortMalloc
+#define rt_free    vPortFree
+
+
+#define  RT_NAME_MAX  8
 
 #define BSP_USING_UART1
 
+struct rt_list_node
+{
+    struct rt_list_node *next;                          /**< point to next node. */
+    struct rt_list_node *prev;                          /**< point to prev node. */
+};
+typedef struct rt_list_node rt_list_t;                  /**< Type for lists. */
+
+struct rt_slist_node
+{
+    struct rt_slist_node *next;                         /**< point to next node. */
+};
+typedef struct rt_slist_node rt_slist_t;                /**< Type for single list. */
+
+
+enum rt_object_class_type
+{
+    RT_Object_Class_Null   = 0,                         /**< The object is not used. */
+    RT_Object_Class_Thread,                             /**< The object is a thread. */
+    RT_Object_Class_Semaphore,                          /**< The object is a semaphore. */
+    RT_Object_Class_Mutex,                              /**< The object is a mutex. */
+    RT_Object_Class_Event,                              /**< The object is a event. */
+    RT_Object_Class_MailBox,                            /**< The object is a mail box. */
+    RT_Object_Class_MessageQueue,                       /**< The object is a message queue. */
+    RT_Object_Class_MemHeap,                            /**< The object is a memory heap */
+    RT_Object_Class_MemPool,                            /**< The object is a memory pool. */
+    RT_Object_Class_Device,                             /**< The object is a device */
+    RT_Object_Class_Timer,                              /**< The object is a timer. */
+    RT_Object_Class_Module,                             /**< The object is a module. */
+    RT_Object_Class_Unknown,                            /**< The object is unknown. */
+    RT_Object_Class_Static = 0x80                       /**< The object is a static object. */
+};
+
+/**
+ * The information of the kernel object
+ */
+struct rt_object_information
+{
+    enum rt_object_class_type type;                     /**< object class type */
+    rt_list_t                 object_list;              /**< object list */
+    uint32_t                  object_size;              /**< object size */
+};
+
+
+enum rt_device_class_type
+{
+    RT_Device_Class_Char = 0,                           /**< character device */
+    RT_Device_Class_Block,                              /**< block device */
+    RT_Device_Class_NetIf,                              /**< net interface */
+    RT_Device_Class_MTD,                                /**< memory device */
+    RT_Device_Class_CAN,                                /**< CAN device */
+    RT_Device_Class_RTC,                                /**< RTC device */
+    RT_Device_Class_Sound,                              /**< Sound device */
+    RT_Device_Class_Graphic,                            /**< Graphic device */
+    RT_Device_Class_I2CBUS,                             /**< I2C bus device */
+    RT_Device_Class_USBDevice,                          /**< USB slave device */
+    RT_Device_Class_USBHost,                            /**< USB host bus */
+    RT_Device_Class_SPIBUS,                             /**< SPI bus device */
+    RT_Device_Class_SPIDevice,                          /**< SPI device */
+    RT_Device_Class_SDIO,                               /**< SDIO bus device */
+    RT_Device_Class_PM,                                 /**< PM pseudo device */
+    RT_Device_Class_Pipe,                               /**< Pipe device */
+    RT_Device_Class_Portal,                             /**< Portal device */
+    RT_Device_Class_Timer,                              /**< Timer device */
+    RT_Device_Class_Miscellaneous,                      /**< Miscellaneous device */
+    RT_Device_Class_Sensor,                             /**< Sensor device */
+    RT_Device_Class_Touch,                              /**< Touch device */
+    RT_Device_Class_Unknown                             /**< unknown device */
+};
+
+
+
+struct rt_object
+{
+    char       name[8];                       /**< name of kernel object */
+    uint8_t type;                                    /**< type of kernel object */
+    uint8_t flag;                                    /**< flag of kernel object */
+    rt_list_t  list;                                    /**< list node of kernel object */
+};
+typedef struct rt_object *rt_object_t;                  /**< Type for kernel objects. */
+
+
+typedef struct rt_device *rt_device_t;
+
+struct rt_device_ops
+{
+    /* common device interface */
+    uint32_t  (*init)   (rt_device_t dev);
+    uint32_t  (*open)   (rt_device_t dev, uint16_t oflag);
+    uint32_t  (*close)  (rt_device_t dev);
+    uint32_t  (*read)   (rt_device_t dev, uint32_t pos, void *buffer, uint32_t size);
+    uint32_t  (*write)  (rt_device_t dev, uint32_t pos, const void *buffer, uint32_t size);
+    uint32_t  (*control)(rt_device_t dev, int cmd, void *args);
+};
+
+
+struct rt_device
+{
+    struct rt_object          parent;                   /**< inherit from rt_object */
+
+    enum rt_device_class_type type;                     /**< device type */
+    uint16_t               flag;                     /**< device flag */
+    uint16_t               open_flag;                /**< device open flag */
+
+    uint8_t                ref_count;                /**< reference count */
+    uint8_t                device_id;                /**< 0 - 255 */
+
+    /* device call back */
+    uint32_t (*rx_indicate)(rt_device_t dev, uint32_t size);
+    uint32_t (*tx_complete)(rt_device_t dev, void *buffer);
+
+    const struct rt_device_ops *ops;
+    void                     *user_data;                /**< device private data */
+};
 
 
 
@@ -17,15 +145,7 @@
 
 
 
-
-
-
-
-
-
-#define rt_container_of(ptr, type, member) \
-    ((type *)((char *)(ptr) - (unsigned long)(&((type *)0)->member)))
-
+#define RT_DEVICE_CTRL_CONFIG           0x03            /**< configure device */
 
 #define RT_DEVICE_CTRL_SET_INT          0x10            /**< set interrupt */
 #define RT_DEVICE_CTRL_CLR_INT          0x11            /**< clear interrupt */
@@ -86,8 +206,51 @@
 
 
 
+void rt_system_object_init(void);
+struct rt_object_information *
+rt_object_get_information(enum rt_object_class_type type);
+void rt_object_init(struct rt_object         *object,
+                    enum rt_object_class_type type,
+                    const char               *name);
+void rt_object_detach(rt_object_t object);
+rt_object_t rt_object_allocate(enum rt_object_class_type type,
+                               const char               *name);
+void rt_object_delete(rt_object_t object);
+bool rt_object_is_systemobject(rt_object_t object);
+uint8_t rt_object_get_type(rt_object_t object);
+rt_object_t rt_object_find(const char *name, uint8_t type);
 
+rt_device_t rt_device_find(const char *name);
 
+uint32_t rt_device_register(rt_device_t dev,
+                            const char *name,
+                            uint16_t flags);
+uint32_t rt_device_unregister(rt_device_t dev);
+
+rt_device_t rt_device_create(int type, int attach_size);
+void rt_device_destroy(rt_device_t device);
+
+uint32_t rt_device_init_all(void);
+
+uint32_t
+rt_device_set_rx_indicate(rt_device_t dev,
+                          uint32_t (*rx_ind)(rt_device_t dev, uint32_t size));
+uint32_t
+rt_device_set_tx_complete(rt_device_t dev,
+                          uint32_t (*tx_done)(rt_device_t dev, void *buffer));
+
+uint32_t  rt_device_init (rt_device_t dev);
+uint32_t  rt_device_open (rt_device_t dev, uint16_t oflag);
+uint32_t  rt_device_close(rt_device_t dev);
+uint32_t rt_device_read (rt_device_t dev,
+                          uint32_t    pos,
+                          void       *buffer,
+                          uint32_t   size);
+uint32_t rt_device_write(rt_device_t dev,
+                          uint32_t    pos,
+                          const void *buffer,
+                          uint32_t   size);
+uint32_t  rt_device_control(rt_device_t dev, int cmd, void *arg);
 
 
 

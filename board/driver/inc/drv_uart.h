@@ -2,6 +2,7 @@
 #define  __DRV_UART_H_
 
 #include "drv_config.h"
+#include "drv_server.h"
 
 #if defined(BSP_USING_UART1)
 #ifndef UART1_CONFIG
@@ -211,6 +212,7 @@ struct rt_serial_tx_dma
 
 struct rt_serial_device
 {
+	struct rt_device          parent;
     const struct rt_uart_ops *ops;
     struct serial_configure   config;
 

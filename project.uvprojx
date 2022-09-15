@@ -446,6 +446,16 @@
               <FileType>1</FileType>
               <FilePath>.\board\driver\src\drv_uart.c</FilePath>
             </File>
+            <File>
+              <FileName>drv_device.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board\driver\src\drv_device.c</FilePath>
+            </File>
+            <File>
+              <FileName>drv_object.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\board\driver\src\drv_object.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
