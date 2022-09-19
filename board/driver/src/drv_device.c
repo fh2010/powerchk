@@ -33,12 +33,6 @@ uint32_t rt_device_register(rt_device_t dev,
     dev->flag = flags;
     dev->ref_count = 0;
     dev->open_flag = 0;
-
-#if defined(RT_USING_POSIX)
-    dev->fops = NULL;
-    rt_wqueue_init(&(dev->wait_queue));
-#endif
-
     return DRV_SUCCESS;
 }
 

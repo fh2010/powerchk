@@ -11,6 +11,8 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
+#include "FreeRTOS.h"
+#include "task.h"
 #include <FreeRTOSConfig.h>
 #include <stm32l1xx.h>
 
@@ -46,6 +48,8 @@ void _Error_Handler(char *s, int num);
 #endif
 
 void SystemClock_Config(void);
+
+void board_init(void);
 
 #ifdef __cplusplus
 }

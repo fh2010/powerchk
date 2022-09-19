@@ -2,6 +2,7 @@
 #define  __DRV_CONFIG_H_
 
 #include <stm32l1xx.h>
+#include "stm32l1xx_hal_conf.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>

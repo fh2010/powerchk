@@ -9,9 +9,7 @@
  */
  
 #include "board.h"
-
-volatile uint32_t ulHighFrequencyTimerTicks;
-
+#include "drv_uart.h"
 
 void SystemClock_Config(void)
 {
@@ -50,6 +48,14 @@ void SystemClock_Config(void)
   }
 }
 
+void board_systick_init(void)
+{
+
+    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / configTICK_RATE_HZ);
+    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+    HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
 /**
   * @brief  This function is executed in case of error occurrence.
   * @param  None
@@ -63,5 +69,18 @@ void _Error_Handler(char *s, int num)
     {
     }
     /* USER CODE END Error_Handler */
+}
+
+void board_init(void)
+{
+    /* HAL_Init() function is called at the beginning of the program */
+    HAL_Init();
+    taskENTER_CRITICAL();
+    SystemClock_Config();
+	taskEXIT_CRITICAL();
+
+    board_systick_init();
+    //rt_hw_pin_init();
+    drv_usart_init();
 }
 

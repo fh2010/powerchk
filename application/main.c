@@ -1,11 +1,13 @@
-#include "drv_uart.h"
+#include "dev_console.h"
+#include "board.h"
 
 int main(void)
 {
-	drv_usart_init();
+	board_init();
+	dev_console_set_device();
 	while(1)
 	{
-	
+		
 	}
 
 }

@@ -1,5 +1,5 @@
 #include "drv_uart.h"
-
+#include "FreeRTOS.h"
 
 #ifdef BSP_SERIAL_USING_DMA
     static void uart_dma_config(struct rt_serial_device *serial, rt_ubase_t flag);

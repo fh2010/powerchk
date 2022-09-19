@@ -269,3 +269,5 @@ uint32_t rt_hw_serial_register(struct rt_serial_device *serial,
                                const char              *name,
                                uint32_t                flag,
                                void                    *data);
+							   
+int drv_usart_init(void);
