@@ -10,6 +10,7 @@
  
 #include "board.h"
 #include "drv_uart.h"
+extern void xPortSysTickHandler( void );
 
 void SystemClock_Config(void)
 {
@@ -50,10 +51,9 @@ void SystemClock_Config(void)
 
 void board_systick_init(void)
 {
-
     HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / configTICK_RATE_HZ);
     HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-    HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
 }
 
 /**
@@ -82,5 +82,11 @@ void board_init(void)
     board_systick_init();
     //rt_hw_pin_init();
     drv_usart_init();
+}
+
+void SysTick_Handler(void)
+{
+  HAL_IncTick();
+  xPortSysTickHandler();
 }
 
