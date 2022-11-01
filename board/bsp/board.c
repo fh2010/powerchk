@@ -10,6 +10,7 @@
  
 #include "board.h"
 #include "drv_uart.h"
+#include "dev_console.h"
 extern void xPortSysTickHandler( void );
 
 void SystemClock_Config(void)
@@ -70,23 +71,34 @@ void _Error_Handler(char *s, int num)
     }
     /* USER CODE END Error_Handler */
 }
-
+void show_version(void);
 void board_init(void)
 {
     /* HAL_Init() function is called at the beginning of the program */
     HAL_Init();
     taskENTER_CRITICAL();
     SystemClock_Config();
-	taskEXIT_CRITICAL();
+    taskEXIT_CRITICAL();
 
     board_systick_init();
     //rt_hw_pin_init();
     drv_usart_init();
+    dev_console_set_device();
+    //show_version();
 }
 
 void SysTick_Handler(void)
 {
   HAL_IncTick();
   xPortSysTickHandler();
+}
+
+void show_version(void)
+{
+    rt_kprintf("\n \\ | /\n");
+    rt_kprintf("- OS -     FreeRTOS Operating System\n");
+    rt_kprintf(" / | \\     %d.%d.%d build %s %s\n",
+               (int32_t)RT_VERSION_MAJOR, (int32_t)RT_VERSION_MINOR, (int32_t)RT_VERSION_PATCH, __DATE__, __TIME__);
+    rt_kprintf(" 2006 - 2022 Copyright by RT-Thread team\n");
 }
 

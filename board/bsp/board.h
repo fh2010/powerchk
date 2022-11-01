@@ -20,6 +20,10 @@
 extern "C" {
 #endif
 
+#define RT_VERSION_MAJOR                5               /**< Major version number (X.x.x) */
+#define RT_VERSION_MINOR                0               /**< Minor version number (x.X.x) */
+#define RT_VERSION_PATCH                0               /**< Patch version number (x.x.X) */
+
 #define STM32_FLASH_START_ADRESS     ((uint32_t)0x08000000)
 #define STM32_FLASH_SIZE             (64 * 1024)
 #define STM32_FLASH_END_ADDRESS      ((uint32_t)(STM32_FLASH_START_ADRESS + STM32_FLASH_SIZE))

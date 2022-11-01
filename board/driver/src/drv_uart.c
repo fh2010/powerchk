@@ -1620,3 +1620,5 @@ int drv_usart_init(void)
 
     return result;
 }
+
+

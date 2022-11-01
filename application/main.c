@@ -4,7 +4,6 @@
 int main(void)
 {
 	board_init();
-	dev_console_set_device();
 	while(1)
 	{
 		
