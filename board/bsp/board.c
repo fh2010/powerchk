@@ -84,7 +84,7 @@ void board_init(void)
     //rt_hw_pin_init();
     drv_usart_init();
     dev_console_set_device();
-    //show_version();
+    show_version();
 }
 
 void SysTick_Handler(void)
@@ -99,6 +99,6 @@ void show_version(void)
     rt_kprintf("- OS -     FreeRTOS Operating System\n");
     rt_kprintf(" / | \\     %d.%d.%d build %s %s\n",
                (int32_t)RT_VERSION_MAJOR, (int32_t)RT_VERSION_MINOR, (int32_t)RT_VERSION_PATCH, __DATE__, __TIME__);
-    rt_kprintf(" 2006 - 2022 Copyright by RT-Thread team\n");
+    rt_kprintf(" 2006 - 2022 Copyright by FH team\n");
 }
 
