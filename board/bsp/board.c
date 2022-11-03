@@ -11,6 +11,7 @@
 #include "board.h"
 #include "drv_uart.h"
 #include "dev_console.h"
+#include <cm_backtrace.h>
 extern void xPortSysTickHandler( void );
 
 void SystemClock_Config(void)
@@ -100,5 +101,13 @@ void show_version(void)
     rt_kprintf(" / | \\     %d.%d.%d build %s %s\n",
                (int32_t)RT_VERSION_MAJOR, (int32_t)RT_VERSION_MINOR, (int32_t)RT_VERSION_PATCH, __DATE__, __TIME__);
     rt_kprintf(" 2006 - 2022 Copyright by FH team\n");
+}
+
+void assert_failed(uint8_t* file, uint32_t line)
+{
+    cm_backtrace_assert(cmb_get_sp());
+    rt_kprintf("assert failed at %s:%d \n", file, line);
+    while (1) {
+    }
 }
 

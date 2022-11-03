@@ -137,7 +137,7 @@
   * @brief Uncomment the line below to expanse the "assert_param" macro in the 
   *        HAL drivers code
   */
-//#define USE_FULL_ASSERT    1U
+#define USE_FULL_ASSERT    1U
 
 /* ################## Register callback feature configuration ############### */
 /**
@@ -299,13 +299,6 @@
 /* Exported macro ------------------------------------------------------------*/
 #ifdef  USE_FULL_ASSERT
 
-void assert_failed(uint8_t* file, uint32_t line)
-{
-	while (1)
-	{
-
-	}
-}
 /**
   * @brief  The assert_param macro is used for function's parameters check.
   * @param  expr If expr is false, it calls assert_failed function

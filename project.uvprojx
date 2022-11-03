@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32L151xB,USE_HAL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\component\drivers\include;.\component\FreeRTOS\Source\include;.\component\FreeRTOS\Source\portable\RVDS\ARM_CM3;.\include;.\board\bsp;.\board\include;.\board\driver\inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc\Legacy;.\board\STM32L1xx_HAL\CMSIS\Include;.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Include;.\device\console</IncludePath>
+              <IncludePath>.\component\drivers\include;.\component\FreeRTOS\Source\include;.\component\FreeRTOS\Source\portable\RVDS\ARM_CM3;.\component\CmBacktrace\cm_backtrace;.\component\CmBacktrace\cm_backtrace\Languages\en-US;.\component\EasyLogger\easylogger\inc;.\include;.\board\bsp;.\board\include;.\board\driver\inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc\Legacy;.\board\STM32L1xx_HAL\CMSIS\Include;.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Include;.\device\console</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -432,6 +432,41 @@
               <FileName>heap_4.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\component\FreeRTOS\Source\portable\MemMang\heap_4.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>component/CmBacktrace</GroupName>
+          <Files>
+            <File>
+              <FileName>cm_backtrace.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\component\CmBacktrace\cm_backtrace\cm_backtrace.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>component/EasyLogger</GroupName>
+          <Files>
+            <File>
+              <FileName>elog.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\component\EasyLogger\easylogger\src\elog.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\component\EasyLogger\easylogger\src\elog_utils.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_port.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\component\EasyLogger\easylogger\port\elog_port.c</FilePath>
+            </File>
+            <File>
+              <FileName>elog_buf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\component\EasyLogger\easylogger\src\elog_buf.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -567,6 +602,11 @@
               <FileName>stm32l1xx_hal_msp.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Source\Templates\stm32l1xx_hal_msp.c</FilePath>
+            </File>
+            <File>
+              <FileName>cmb_fault.S</FileName>
+              <FileType>2</FileType>
+              <FilePath>.\component\CmBacktrace\cm_backtrace\fault_handler\keil\cmb_fault.S</FilePath>
             </File>
           </Files>
         </Group>
