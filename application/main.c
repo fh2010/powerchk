@@ -14,16 +14,16 @@ static void vTaskShowRTOS(void *pvParameters)
     uint32_t index = 0;
     while(1)
     {
-      rt_kprintf("Rtos tick index :%d\n",index++);
+      log_w("Rtos tick index :%d",index++);
       vTaskDelay(1000);
     }
 }
 
-static void sys_init_thread(void* pvParameters){
+static void vTaskLog(void* pvParameters){
 
 		while(1)
     {
-      elog_a("elog","Hello EasyLogger!");
+      elog_i("tag","vTaskLog");
       vTaskDelay(500);
     }
 }
@@ -39,7 +39,7 @@ static void AppTaskCreate (void)
                  &xHandleTaskShow );  /*   */
 	
 	
-	xTaskCreate( sys_init_thread,    		      /*   */
+	xTaskCreate( vTaskLog,    		      /*   */
                  "vTaskLog",  		    /*     */
                  512,         		    /* word4 */
                  NULL,        		    /*   */
@@ -55,8 +55,7 @@ static void AppTaskCreate (void)
 int main(void)
 {
     board_init();
-	  cm_backtrace_init("project", HARDWARE_VERSION, SOFTWARE_VERSION);
-	    /* initialize EasyFlash and EasyLogger */
+	  //cm_backtrace_init("project", HARDWARE_VERSION, SOFTWARE_VERSION);
     if ((elog_init() == ELOG_NO_ERR)) {
         /* set enabled format */
         elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL & ~ELOG_FMT_P_INFO);
