@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>STM32L151xB,USE_HAL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>.\component\drivers\include;.\component\FreeRTOS\Source\include;.\component\FreeRTOS\Source\portable\RVDS\ARM_CM3;.\component\CmBacktrace\cm_backtrace;.\component\CmBacktrace\cm_backtrace\Languages\en-US;.\component\EasyLogger\easylogger\inc;.\include;.\board\bsp;.\board\include;.\board\driver\inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc\Legacy;.\board\STM32L1xx_HAL\CMSIS\Include;.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Include;.\device\console</IncludePath>
+              <IncludePath>.\component\drivers\include;.\component\FreeRTOS\Source\include;.\component\FreeRTOS\Source\portable\RVDS\ARM_CM3;.\component\CmBacktrace\cm_backtrace;.\component\CmBacktrace\cm_backtrace\Languages\en-US;.\component\EasyLogger\easylogger\inc;.\include;.\board\bsp;.\board\include;.\board\driver\inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc;.\board\STM32L1xx_HAL\STM32L1xx_HAL_Driver\Inc\Legacy;.\board\STM32L1xx_HAL\CMSIS\Include;.\board\STM32L1xx_HAL\CMSIS\Device\ST\STM32L1xx\Include;.\device\console;.\device\lcd</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -387,6 +387,11 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\application\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>ui_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\application\ui_task.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -477,6 +482,11 @@
               <FileName>dev_console.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\device\console\dev_console.c</FilePath>
+            </File>
+            <File>
+              <FileName>dev_lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\device\lcd\dev_lcd.c</FilePath>
             </File>
           </Files>
         </Group>

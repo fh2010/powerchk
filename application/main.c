@@ -1,7 +1,10 @@
+#define  LOG_TAG   "main"
 #include "dev_console.h"
+#include "dev_lcd.h"
 #include "board.h"
 #include <elog.h>
 #include <cm_backtrace.h>
+
 #define HARDWARE_VERSION               "V1.0.0"
 #define SOFTWARE_VERSION               "V0.1.0"
 
@@ -21,9 +24,19 @@ static void vTaskShowRTOS(void *pvParameters)
 
 static void vTaskLog(void* pvParameters){
 
+		uint16_t index = 0;
+		char show[6];
+		sprintf(show,"V:%04d",index);
+		dev_lcd_hardware_init();
+		dev_lcd_draw_string(10,10,"123456AVm",ASCII_FONT_TYPE_1608,WHITE,RED);
+		dev_lcd_draw_string(10,40,"123456AVm",ASCII_FONT_TYPE_2412,WHITE,RED);
+		dev_lcd_draw_string(0,112,"A:1234",ASCII_FONT_TYPE_6432,WHITE,RED);
+		dev_lcd_draw_string(0,176,show,ASCII_FONT_TYPE_6432,WHITE,RED);
 		while(1)
     {
       elog_i("tag","vTaskLog");
+			dev_lcd_draw_string(0,176,show,ASCII_FONT_TYPE_6432,WHITE,RED);
+			sprintf(show,"V:%04d",index++);
       vTaskDelay(500);
     }
 }
@@ -74,7 +87,8 @@ int main(void)
         //rt_assert_set_hook(rtt_user_assert_hook);
 
     }
-    AppTaskCreate();
+	ui_init();
+    //AppTaskCreate();
     vTaskStartScheduler();
     while(1)
     {
