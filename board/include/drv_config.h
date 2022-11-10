@@ -23,6 +23,7 @@
 #define  RT_NAME_MAX  8
 
 #define BSP_USING_UART1
+#define BSP_USING_I2C1
 
 struct rt_list_node
 {
